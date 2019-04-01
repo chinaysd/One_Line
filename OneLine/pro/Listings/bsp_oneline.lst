@@ -1,0 +1,488 @@
+C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/01/2019 17:43:41 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE BSP_ONELINE
+OBJECT MODULE PLACED IN .\Objects\bsp_oneline.obj
+COMPILER INVOKED BY: E:\MDK\C51\BIN\C51.EXE ..\bsp\bsp_oneline.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\bsp;..\lib;..\user) 
+                    -DEBUG OBJECTEXTEND PRINT(.\Listings\bsp_oneline.lst) TABS(7) OBJECT(.\Objects\bsp_oneline.obj)
+
+line level    source
+
+   1          #include "bsp_oneline.h"
+   2          
+   3          
+   4          #if 0
+              
+              PROTOCOL_SENDMODE Protocol_SendMode;
+              
+              #else
+   9          
+  10          unsigned char   command= 0x01,commandTmp=0x01;
+  11          unsigned char   processSender;
+  12          unsigned char   index = 8;
+  13          unsigned char   u8Send0Cnt, u8Send1Cnt, u8SendHeaderCnt, u8SendEnderCnt, u8SenderCnt;
+  14          
+  15          
+  16          
+  17          #endif
+  18          
+  19          #if 0
+              unsigned char Data,Rev_Data,Total_Data,Value,StartRevDataFlag,LowLevelFlag;
+              unsigned int HightLevelTime,LowLevelTime,u8Cnts50ms;
+              #else
+  23          unsigned char u8cnt50ms,u8CntMs;//50ms¼ÆÊ±
+  24          
+  25          unsigned char Start_Receive_Data ;//¿ªÊ¼½ÓÊÕÊý¾Ý
+  26          unsigned char Value,STAT,R_Data;
+  27          unsigned char High_Leve_Time,Low_Leve_Time;//¸ßµçÆ½Ê±¼ä
+  28          unsigned char Total_Data=8;    //×ÜÊý¾Ý³¤¶È
+  29          unsigned int u16Cnt4hours;
+  30          unsigned char  u8shuttime;
+  31          unsigned char  u8Data_time;//½ÓÊÕÊý¾ÝµÄÊ±¼ä£¬Èç¹û0.5SÖ®ÄÚÃ»ÓÐÊÕµ½Êý¾Ý£¬½«·¢ÈÈÆ¬¹Ø±Õ
+  32          unsigned char Flag;
+  33          unsigned char Data;
+  34          
+  35          #endif
+  36          
+  37          /**********************************************************************************
+  38          *×÷Õß:peter
+  39          *ÈÕÆÚ:190401
+  40          *ÃèÊö:IO¿ÚÊä³ö³õÊ¼»¯
+  41          *·µ»Ø:ÎÞ
+  42          ***********************************************************************************/
+  43          void OneLineOut_Init(void)
+  44          {
+  45   1             P0CON |= 0X01;
+  46   1             P0PH   &= ~0X01;
+  47   1      }
+  48          /**********************************************************************************
+  49          *×÷Õß:peter
+  50          *ÈÕÆÚ:190401
+  51          *ÃèÊö:IO¿ÚÊäÈë³õÊ¼»¯
+  52          *·µ»Ø:ÎÞ
+  53          ***********************************************************************************/
+  54          void OneLineIn_Init(void)
+C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/01/2019 17:43:41 PAGE 2   
+
+  55          {
+  56   1             P0CON &= ~0X01;
+  57   1             P0PH   |=  0X01;
+  58   1      }
+  59          
+  60          /**********************************************************************************
+  61          *×÷Õß:peter
+  62          *ÈÕÆÚ:190401
+  63          *ÃèÊö:Êý¾Ý1´¦Àí
+  64          *·µ»Ø:ÎÞ
+  65          ***********************************************************************************/
+  66          #if 0
+              static void Data1_Handle(void)
+              {
+                     Protocol_SendMode.u16Send1Cnts ++;
+                     if(Protocol_SendMode.u16Send1Cnts < Data1Time9Cnts)
+                     {
+                            WriteHight();
+                     }
+                     else
+                     {
+                            if(Protocol_SendMode.u16Send1Cnts < Data1Time10Cnts)
+                            {
+                                   WriteLow();
+                            }
+                            else
+                            {
+                                   Protocol_SendMode.u16Send1Cnts = 0;
+                                   Protocol_SendMode.CommandTemp <<= 1;
+                                   Protocol_SendMode.index --;
+                            }
+                     }
+              }
+              /**********************************************************************************
+              *×÷Õß:peter
+              *ÈÕÆÚ:190401
+              *ÃèÊö:Êý¾Ý0´¦Àí
+              *·µ»Ø:ÎÞ
+              ***********************************************************************************/
+              static void Data0_Handle(void)
+              {
+                     Protocol_SendMode.u16Send0Cnts ++;
+                     if(Protocol_SendMode.u16Send0Cnts < Data0Time5Cnts)
+                     {
+                            WriteHight();
+                     }
+                     else
+                     {
+                            if(Protocol_SendMode.u16Send0Cnts < Data0Time10Cnts)
+                            {
+                                   WriteLow();
+                            }
+                            else
+                            {
+                                   Protocol_SendMode.u16Send0Cnts = 0;
+                                   Protocol_SendMode.CommandTemp <<= 1;
+                                   Protocol_SendMode.index --;
+                            }
+                     }
+              }
+              /**********************************************************************************
+              *×÷Õß:peter
+C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/01/2019 17:43:41 PAGE 3   
+
+              *ÈÕÆÚ:190401
+              *ÃèÊö:Êý¾Ý´¦Àí
+              *·µ»Ø:ÎÞ
+              ***********************************************************************************/
+              static void Data_Handle(void)
+              {
+                     if(Protocol_SendMode.ProcessFlag)
+                     {
+                            Protocol_SendMode.u16SendHanderCnts ++;
+                            if(Protocol_SendMode.u16SendHanderCnts < HeadDataTime)
+                            {
+                                   WriteLow();
+                            }
+                            else
+                           {
+                                          if(Protocol_SendMode.index > 0)
+                                          {
+                                                 if(Protocol_SendMode.CommandTemp & 0x80)
+                                                 {
+                                                        Data1_Handle();
+                                                 }
+                                                 else
+                                                 {
+                                                        Data0_Handle();
+                                                 }
+                                          }
+                                          else
+                                          {
+                                                 Protocol_SendMode.u16SendEnderCnts ++;
+                                                 WriteLow();
+                                                 if(Protocol_SendMode.u16SendEnderCnts == EndDataTime)
+                                                 {
+                                                        WriteHight();
+                                                        Protocol_SendMode.u16SendEnderCnts = 0;
+                                                        Protocol_SendMode.u16SendHanderCnts = 0;
+                                                        Protocol_SendMode.ProcessFlag = 0;
+                                                        Protocol_SendMode.index = 8;
+                                                 }
+                                          }
+                            }
+                     }
+              }
+              #endif
+ 160          /**********************************************************************************
+ 161          *×÷Õß:peter
+ 162          *ÈÕÆÚ:190401
+ 163          *ÃèÊö:Ò»´®Êý¾Ý·¢ËÍ´¦Àí
+ 164          *·µ»Ø:ÎÞ
+ 165          ***********************************************************************************/
+ 166          void OneLineOut_Handle(void)
+ 167          {
+ 168   1             #if 0
+                     Protocol_SendMode.u16SenderCnts ++;
+                     if(Protocol_SendMode.u16SenderCnts == SerialDataTime)
+                     {
+                            Protocol_SendMode.u16SenderCnts = 0;
+                            Protocol_SendMode.ProcessFlag = 1;
+                            Protocol_SendMode.CommandTemp = Protocol_SendMode.Command;
+                     }
+                     Data_Handle();
+                     #else
+ 178   1             u8SenderCnt++;
+C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/01/2019 17:43:41 PAGE 4   
+
+ 179   1      
+ 180   1             if (200 == u8SenderCnt) 
+ 181   1             {//Ã¿50msÖ®ÄÚ·¢ËÍÒ»´ÎÊý¾Ý £¬¼´ ·¢ËÍÊý¾ÝËùÐèÊ±¼ä + ·¢ËÍ¼ä¸ô = 50
+ 182   2                    u8SenderCnt = 0;
+ 183   2                    processSender = 1;
+ 184   2                    commandTmp = command;
+ 185   2             }
+ 186   1             if (processSender) 
+ 187   1             {
+ 188   2      
+ 189   2                    //·¢ËÍÐÅÏ¢Í·
+ 190   2                    u8SendHeaderCnt++;
+ 191   2                    if (u8SendHeaderCnt < 20)    //Êä³ö19*0.25=4.75msµÍµçÆ½
+ 192   2                    {
+ 193   3                           //SENDER_WRITE_0;
+ 194   3                           WriteLow();
+ 195   3                    } 
+ 196   2                    else 
+ 197   2                    {
+ 198   3                           if (index > 0) 
+ 199   3                           {
+ 200   4                                  if (commandTmp & 0x80) 
+ 201   4                                  {//Êä³öÊý¾Ý1
+ 202   5                                         u8Send1Cnt++;
+ 203   5                                         if (u8Send1Cnt < 9) 
+ 204   5                                         {
+ 205   6                                                WriteHight();
+ 206   6                                                //SENDER_WRITE_1;   //Êä³ö8*0.25=2ms¸ßµçÆ½
+ 207   6                                         }
+ 208   5                                         else
+ 209   5                                         {
+ 210   6                                                if (u8Send1Cnt < 10)   //Êä³ö2*0.25=0.5msµÍµçÆ½
+ 211   6                                                {
+ 212   7                                                       //SENDER_WRITE_0;
+ 213   7                                                       WriteLow();
+ 214   7                                                } 
+ 215   6                                                else
+ 216   6                                                {//Êä³öÊý¾Ý1²Ù×÷Íê³É
+ 217   7                                                       u8Send1Cnt = 0;
+ 218   7                                                       commandTmp <<= 1;
+ 219   7                                                       index--;
+ 220   7                                                }
+ 221   6                                         }
+ 222   5                                  }
+ 223   4                                  else
+ 224   4                                  { //Êä³öÊý¾Ý0
+ 225   5                                         u8Send0Cnt++;
+ 226   5                                         if (u8Send0Cnt < 5) 
+ 227   5                                         {//Êä³öÁË1msµÄ¸ßµçÆ½
+ 228   6                                                //SENDER_WRITE_1;
+ 229   6                                                WriteHight();
+ 230   6                                         } 
+ 231   5                                         else
+ 232   5                                         {
+ 233   6                                                if (u8Send0Cnt < 10)  //Êä³ö4*0.25=1ms¸ßµçÆ½
+ 234   6                                                {
+ 235   7                                                       //SENDER_WRITE_0;
+ 236   7                                                       WriteLow();
+ 237   7                                                } 
+ 238   6                                                else 
+ 239   6                                                { //Êä³öÊý¾Ý0²Ù×÷Íê³É
+ 240   7                                                       u8Send0Cnt = 0;
+C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/01/2019 17:43:41 PAGE 5   
+
+ 241   7                                                       u8Send0Cnt = 0;
+ 242   7                                                       commandTmp <<= 1;
+ 243   7                                                       index--;
+ 244   7                                                }
+ 245   6                                         }
+ 246   5                                  }
+ 247   4                           } 
+ 248   3                           else 
+ 249   3                           {//ËÍÊýÍê³É£¬¿ªÊ¼Êä³öÐÅÏ¢½áÊø·û
+ 250   4                                  u8SendEnderCnt++;
+ 251   4                                  //SENDER_WRITE_0;//Êä³öµÍµçÆ½
+ 252   4                                  WriteLow();
+ 253   4                                  if (24 == u8SendEnderCnt)      //Êä³ö23*0.25=5.75msµÍµçÆ½ºó£¬½Ó×ÅÊä³ö¸ßµçÆ½£¬Ò»¸öbyteµÄÊý·¢ËÍÍê±Ï
+ 254   4                                  {
+ 255   5                                         //SENDER_WRITE_1;
+ 256   5                                         WriteHight();
+ 257   5                                         index = 8;
+ 258   5                                         processSender = 0;
+ 259   5                                         u8SendHeaderCnt = 0;
+ 260   5                                         u8SendEnderCnt = 0;
+ 261   5                                  }
+ 262   4                           }
+ 263   3                    }
+ 264   2             }
+ 265   1      
+ 266   1      
+ 267   1             #endif
+ 268   1      }
+ 269          
+ 270          /**********************************************************************************
+ 271          *×÷Õß:peter
+ 272          *ÈÕÆÚ:190401
+ 273          *ÃèÊö:Ò»´®Êý¾Ý½ÓÊÕ´¦Àí
+ 274          *·µ»Ø:ÎÞ
+ 275          ***********************************************************************************/
+ 276          void OneLineIn_Handle(void)
+ 277          {
+ 278   1             #if 0
+                     Rev_Data = ONELINE_PIN;
+                     if((!Rev_Data)&&(!StartRevDataFlag))
+                     {
+                            ++ u8Cnts50ms;
+                     }
+                     if(Rev_Data)
+                     {
+                            if((u8Cnts50ms >= 15)&&(u8Cnts50ms <= 22))
+                            {
+                                   HightLevelTime = 0;
+                                   LowLevelTime = 0;
+                                   u8Cnts50ms= 0;
+                                   Value = 0;
+                                   StartRevDataFlag = 1;
+                                   Total_Data = 8;
+                            }
+                            else if(u8Cnts50ms > 22)
+                            {
+                                   HightLevelTime = 0;
+                                   LowLevelTime = 0;
+                                   u8Cnts50ms= 0;
+                                   Value = 0;
+                                   StartRevDataFlag = 0;
+                                   Total_Data = 8;
+C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/01/2019 17:43:41 PAGE 6   
+
+                            }
+                            else
+                            {
+                                   u8Cnts50ms = 0;
+                            }
+                     }
+                     if(StartRevDataFlag)
+                     {
+                            if(Total_Data > 0)
+                            {
+                                   if(Rev_Data)
+                                   {
+                                          LowLevelFlag = 1;
+                                          HightLevelTime ++;
+                                   }
+                                   if((!Rev_Data)&&(LowLevelFlag))
+                                   {
+                                          LowLevelFlag = 0;
+                                          Value <<= 1;
+                                          LowLevelTime ++;
+                                          if((HightLevelTime >= 7)&&(HightLevelTime <= 10))
+                                          {
+                                                 HightLevelTime = 0;
+                                                 LowLevelTime = 0;
+                                                 Value |= 0x01;
+                                                 Total_Data --;
+                                          }
+                                          if((HightLevelTime >= 1)&&(HightLevelTime <= 6))
+                                          {
+                                                 HightLevelTime = 0;
+                                                 LowLevelTime = 0;
+                                                 Value &= ~0x01;
+                                                 Total_Data --;
+                                          }
+                                          if((HightLevelTime > 16)&&(LowLevelTime>8))
+                                          {
+                                                 HightLevelTime = 0;
+                                                 LowLevelTime = 0;
+                                                 u8Cnts50ms= 0;
+                                                 Value = 0;
+                                                 StartRevDataFlag = 0;
+                                                 Total_Data = 8;
+                                          }
+                                   }
+                            }
+                            else
+                            {
+                                   HightLevelTime = 0;
+                                   LowLevelTime = 0;
+                                   u8Cnts50ms= 0;
+                                   Data = Value;
+                                   StartRevDataFlag = 0;
+                                   Total_Data = 8;
+                            }
+                     }
+                     #else
+ 359   1      R_Data=ONELINE_PIN;
+ 360   1      if((R_Data==0)&&(Start_Receive_Data==0))  //Òýµ¼ÂëµÍµçÆ½µÄÊ±¼ä
+ 361   1      {
+ 362   2             ++u8cnt50ms;
+ 363   2      }
+ 364   1      if(R_Data==1)          //µçÆ½Îª¸ßÊ±ÅÐ¶ÏµÍµçÆ½µÄÊ±¼ä
+C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/01/2019 17:43:41 PAGE 7   
+
+ 365   1      {
+ 366   2             if((15<=u8cnt50ms)&&(22>=u8cnt50ms))    //Ê±¼ä·¶Î§ÔÚÒýµ¼µÍµçÆ½µÄ·¶Î§ÄÚ£¬¿ªÊ¼½ÓÊÕ
+ 367   2             {
+ 368   3                    Low_Leve_Time=0;
+ 369   3                    u8cnt50ms=0;
+ 370   3                    High_Leve_Time=0;
+ 371   3                    Value=0;
+ 372   3                    Total_Data=8;
+ 373   3                    Start_Receive_Data=1;
+ 374   3             }
+ 375   2             else if(22<=u8cnt50ms)     //´óÓÚ ·ñÔò²»½ÓÊÕ
+ 376   2             {
+ 377   3                    Low_Leve_Time=0;
+ 378   3                    u8cnt50ms=0;
+ 379   3                    High_Leve_Time=0;
+ 380   3                    Value=0;
+ 381   3                    Total_Data=8;
+ 382   3                    Start_Receive_Data=0;
+ 383   3             }
+ 384   2             else                       //·ñÔòÇå³ý¼ÆÊý
+ 385   2             {
+ 386   3                    u8cnt50ms=0;
+ 387   3             }          
+ 388   2      }
+ 389   1      
+ 390   1      if(Start_Receive_Data)   //¿ªÊ¼½ÓÊÕÊý¾Ý
+ 391   1      {
+ 392   2             if(Total_Data>0)    //½ÓÊÕ°Ë´Î
+ 393   2             { 
+ 394   3                    if(R_Data==1)       //¸ßµçÆ½µÄÊ±¼ä
+ 395   3                    {
+ 396   4                           Flag=1;            //µÍµçÆ½Ê±ÅÐ¶Ï±êÖ¾
+ 397   4                           High_Leve_Time++;   //¸ßµçÆ½Ê±¼ä¼ÆÊý
+ 398   4                    }
+ 399   3                    if((R_Data==0)&&(Flag==1))  //µÍµçÆ½Ê±ÅÐ¶Ï¸ßµçÆ½Ê±¼ä£¬flag±êÖ¾Î»Ö»½øÈëÒ»´Î£¬                                                                                                                 //Ö»ÓÐÔÚÏÂ´
+             -Î·­×ªµÄÊ±ºò²ÅÄÜ½øÈëÅÐ¶Ï
+ 400   3                    { 
+ 401   4                           Value=Value<<1;             //Êý¾ÝÊ×ÏÈ×óÒÆ£¬°ËÎ»Êý¾ÝÖ»ÐèÒÆÎ»Æß´Î
+ 402   4                           Flag=0;                    //Çå±êÖ¾
+ 403   4                           Low_Leve_Time++;            //µÍµçÆ½Ê±¼ä¼ÆÊý
+ 404   4                           if((High_Leve_Time>=7)&&(High_Leve_Time<=10))  //ÅÐ¶ÏÂëÎª1
+ 405   4                           {
+ 406   5                                  Low_Leve_Time=0;
+ 407   5                                  High_Leve_Time=0;
+ 408   5                                  Value |= 0x01;
+ 409   5                                  Total_Data--;
+ 410   5                           }
+ 411   4                           else if((High_Leve_Time>=1)&&(High_Leve_Time<=6))  //ÅÐ¶ÏÂëÎª0
+ 412   4                           {
+ 413   5                                  Low_Leve_Time=0;
+ 414   5                                  High_Leve_Time=0;
+ 415   5                                  Value &= (~0x01);
+ 416   5                                  Total_Data--;
+ 417   5                           }
+ 418   4                    } 
+ 419   3                    if((High_Leve_Time>16)||(Low_Leve_Time>8))      //ÈÝ´í´¦Àí£¬ÔÚ½ÓÊÕÍêÊý¾Ýºó»á½øÈë
+ 420   3                    {
+ 421   4                           Low_Leve_Time=0;
+ 422   4                           High_Leve_Time=0;
+ 423   4                           u8cnt50ms=0;
+ 424   4                           Start_Receive_Data=0;
+ 425   4                           Value=0;
+C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/01/2019 17:43:41 PAGE 8   
+
+ 426   4                           Total_Data=8;
+ 427   4                    }
+ 428   3             }
+ 429   2      else   //½ÓÊÕÍê³É£¬Çå³ýÏà¹ØÊý¾Ý
+ 430   2      {
+ 431   3             Low_Leve_Time=0;
+ 432   3             High_Leve_Time=0;
+ 433   3             u8cnt50ms=0;
+ 434   3             Start_Receive_Data=0;
+ 435   3             Data=Value;
+ 436   3             Total_Data=8;
+ 437   3             u8Data_time=0;
+ 438   3             //P00 = ~P00;
+ 439   3      }
+ 440   2      }
+ 441   1             #endif
+ 442   1             
+ 443   1      }
+ 444          
+ 445          
+ 446          
+ 447          
+ 448          
+ 449          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    442    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     24    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

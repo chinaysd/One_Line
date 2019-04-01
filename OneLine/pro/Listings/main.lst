@@ -1,0 +1,40 @@
+C51 COMPILER V9.59.0.0   MAIN                                                              04/01/2019 17:31:19 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: E:\MDK\C51\BIN\C51.EXE ..\user\main.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\bsp;..\lib;..\user) DEBUG 
+                    -OBJECTEXTEND PRINT(.\Listings\main.lst) TABS(7) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "system.h"
+   2          
+   3          
+   4          
+   5          
+   6          
+   7          void main(void)
+   8          {
+   9   1             System_Init();
+  10   1             while(1)
+  11   1             {
+  12   2                    System_Handle();
+  13   2             }
+  14   1      }
+  15          
+  16          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =      8    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

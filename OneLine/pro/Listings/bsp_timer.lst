@@ -1,0 +1,89 @@
+C51 COMPILER V9.59.0.0   BSP_TIMER                                                         04/01/2019 18:49:58 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE BSP_TIMER
+OBJECT MODULE PLACED IN .\Objects\bsp_timer.obj
+COMPILER INVOKED BY: E:\MDK\C51\BIN\C51.EXE ..\bsp\bsp_timer.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\bsp;..\lib;..\user) DE
+                    -BUG OBJECTEXTEND PRINT(.\Listings\bsp_timer.lst) TABS(7) OBJECT(.\Objects\bsp_timer.obj)
+
+line level    source
+
+   1          #include "bsp_timer.h"
+   2          
+   3          
+   4          void Timer_Init(void)
+   5          {
+   6   1             TMCON = 0X07;    //------111 ;Timer0、Tiemr1和Tiemr2选择时钟Fsys
+   7   1             
+   8   1             //T0设置
+   9   1             TMOD |= 0x01;                 //0000 0001;Timer0设置工作方式1
+  10   1             TL0 = (65536 - 1400)%256;    //溢出时间：时钟为Fsys，则24000*（1/Fsys）=1ms;
+  11   1             TH0 = (65536 - 1400)/256;
+  12   1             TR0 = 0;
+  13   1             ET0 = 1;//定时器0允许
+  14   1             TR0 = 1;//打开定时器0
+  15   1             //T1设置
+  16   1             TMOD |= 0x20;            //0010 0000;Timer1设置工作方式2
+  17   1             TL1 = 256 - 240;   //溢出时间：时钟为Fsys，则240*（1/Fsys）=10us;
+  18   1             TH1 = 256 - 240;
+  19   1             TR1 = 0;
+  20   1             ET1 = 1;//定时器1允许
+  21   1             TR1 = 1;//打开定时器1
+  22   1             //T2设置
+  23   1             T2MOD = 0x00;
+  24   1             T2CON = 0x00;  //设置为16位重载寄存器
+  25   1             RCAP2H = (65536-48000)/256;     //溢出时间：时钟为Fsys，则48000*（1/Fsys）=2ms;
+  26   1             RCAP2L = (65536-48000)%256;
+  27   1             TR2 = 0;
+  28   1             ET2 = 1;//定时器2允许
+  29   1             TR2 = 1;//打开定时器2              
+  30   1             
+  31   1             EA = 1;
+  32   1      }
+  33          
+  34          /**************************************************
+  35          *函数名称：void timer0/1/2() interrupt 1/3/5
+  36          *函数功能：定时器中断产生方波
+  37          *入口参数：void
+  38          *出口参数：void
+  39          **************************************************/
+  40          void timer0() interrupt 1
+  41          {
+  42   1          TL0 = (65536 - 1400)%256;
+  43   1          TH0 = (65536 - 1400)/256;
+  44   1          TimeOutDet_DecHandle();
+  45   1          //OneLineOut_Handle();
+  46   1          OneLineIn_Handle();
+  47   1      }
+  48          
+  49          void timer1() interrupt 3
+  50          {
+  51   1             
+  52   1      }
+  53          
+  54          void Timer2Int(void) interrupt 5
+C51 COMPILER V9.59.0.0   BSP_TIMER                                                         04/01/2019 18:49:58 PAGE 2   
+
+  55          {             
+  56   1             TF2 = 0;   //溢出清零
+  57   1      
+  58   1      }
+  59          
+  60          
+  61          
+  62          
+  63          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    125    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

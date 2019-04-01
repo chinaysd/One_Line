@@ -1,0 +1,9 @@
+".\Objects\STARTUP.obj",
+".\Objects\main.obj",
+".\Objects\system.obj",
+".\Objects\bsp_led.obj",
+".\Objects\bsp_oneline.obj",
+".\Objects\bsp_timer.obj",
+".\Objects\TimeOut.obj" 
+TO ".\Objects\One_Line" 
+PRINT(".\Listings\One_Line.m51") RAMSIZE(256) 
