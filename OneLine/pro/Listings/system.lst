@@ -1,4 +1,4 @@
-C51 COMPILER V9.59.0.0   SYSTEM                                                            04/01/2019 18:49:58 PAGE 1   
+C51 COMPILER V9.59.0.0   SYSTEM                                                            04/01/2019 20:57:56 PAGE 1   
 
 
 C51 COMPILER V9.59.0.0, COMPILATION OF MODULE SYSTEM
@@ -12,58 +12,87 @@ line level    source
    2          
    3          
    4          TIMEOUT_PARA TimeOut_Para[2];
-   5          //extern PROTOCOL_SENDMODE Protocol_SendMode; 
-   6          extern unsigned char Data;
-   7          
+   5          
+   6          extern PROTOCOL_SENDMODE Protocol_SendMode; 
+   7          extern PROTOCOL_REVMODE  Protocol_RevMode;
    8          
-   9          
+   9          unsigned char KeyPressFlag,Flag;
   10          
-  11          void System_Init(void)
-  12          {
-  13   1              //Protocol_SendMode.index = 8;
-  14   1              //Protocol_SendMode.Command = 0x01;
-  15   1              Led_Init();
-  16   1              //OneLineOut_Init();
-  17   1              OneLineIn_Init();
-  18   1              TimeOutDet_Init();
-  19   1              Timer_Init();
-  20   1      }
-  21          
-  22          void System_Handle(void)
-  23          {
-  24   1             static unsigned char Cnts;
-  25   1             if(TimeOutDet_Check(&TimeOut_Para[0]))
-  26   1             {
-  27   2                    TimeOut_Record(&TimeOut_Para[0],OnLine_Time);
-  28   2                    ++ Cnts;
-  29   2                    if(Cnts & 0x01)
-  30   2                    {
-  31   3                         //LED1_SET(1);         
-  32   3                    }
-  33   2                    else
-  34   2                    {
-  35   3                         //LED1_SET(0);
-  36   3                     }
-  37   2             }
-  38   1             if(Data == 0x01)
-  39   1             {
-  40   2                    LED1_SET(1);  
-  41   2             }
-  42   1      }
-  43          
-  44          
+  11          
+  12          void System_Init(void)
+  13          {
+  14   1              Protocol_SendMode.index = 8;
+  15   1              Protocol_SendMode.Command = 0x00;
+  16   1              Led_Init();
+  17   1              //OneLineOut_Init();
+  18   1              OneLineIn_Init();
+  19   1              Key_Init();
+  20   1              TimeOutDet_Init();
+  21   1              Timer_Init();
+  22   1      }
+  23          
+  24          void System_Handle(void)
+  25          {
+  26   1             static unsigned char Cnts;
+  27   1             if(TimeOutDet_Check(&TimeOut_Para[0]))
+  28   1             {
+  29   2                    TimeOut_Record(&TimeOut_Para[0],OnLine_Time);
+  30   2                    ++ Cnts;
+  31   2                    if(Cnts & 0x01)
+  32   2                    {
+  33   3                           //OneLineOut_Init();
+  34   3                    }
+  35   2                    else
+  36   2                    {
+  37   3                           //OneLineIn_Init();
+  38   3                    }
+  39   2             }
+  40   1             if(Read_Key(KEY_PORT,KEY_PIN))
+  41   1             {
+  42   2                    if(!KeyPressFlag)
+  43   2                    {
+  44   3                           KeyPressFlag = 1;
+  45   3                           OneLineOut_Init();
+  46   3                           Protocol_SendMode.Command = 0x01;
+  47   3                    }
+  48   2             }
+  49   1             else
+  50   1             {
+  51   2                    if(KeyPressFlag)
+  52   2                    {
+  53   3                          Protocol_SendMode.Command = 0x00;   
+  54   3                          KeyPressFlag = 0;
+C51 COMPILER V9.59.0.0   SYSTEM                                                            04/01/2019 20:57:56 PAGE 2   
+
+  55   3                    }
+  56   2             }
+  57   1             if(Protocol_RevMode.Data == 0x01)
+  58   1             {
+  59   2                    LED1_SET(1);  
+  60   2                    Flag = 1;
+  61   2             }
+  62   1             else
+  63   1             {
+  64   2                    LED1_SET(0);  
+  65   2                    if(Flag)
+  66   2                    {
+  67   3                           Flag = 0;
+  68   3                           OneLineIn_Init();
+  69   3                    }
+  70   2             }
+  71   1      }
+  72          
+  73          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     55    ----
+   CODE SIZE        =    119    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     17    ----
+   DATA SIZE        =     19    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
-C51 COMPILER V9.59.0.0   SYSTEM                                                            04/01/2019 18:49:58 PAGE 2   
-
 END OF MODULE INFORMATION.
 
 

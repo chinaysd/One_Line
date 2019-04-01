@@ -6,9 +6,11 @@
 #include "bsp_timer.h"
 #include "bsp_oneline.h"
 #include "TimeOut.h"
+#include "bsp_key.h"
 
 
-#define OnLine_Time      1000
+
+#define OnLine_Time      500
 
 
 

@@ -19,7 +19,6 @@
 #define Data0Time5Cnts    5
 #define Data0Time10Cnts  10
 
-#if 0
 
 typedef struct
 {
@@ -35,7 +34,20 @@ typedef struct
 }
 PROTOCOL_SENDMODE;
 
-#endif
+typedef struct
+{
+	unsigned char Data;
+	unsigned char Rev_Data;
+	unsigned char Total_Data;
+	unsigned char Value;
+	unsigned char StartRevDataFlag;
+	unsigned char LowLevelFlag;
+	unsigned int   HightLevelTime;
+	unsigned int   LowLevelTime;
+	unsigned int   u8Cnts50ms;
+}
+PROTOCOL_REVMODE;
+
 
 
 void OneLineIn_Init(void);
