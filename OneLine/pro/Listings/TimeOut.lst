@@ -1,4 +1,4 @@
-C51 COMPILER V9.59.0.0   TIMEOUT                                                           04/01/2019 11:07:07 PAGE 1   
+C51 COMPILER V9.59.0.0   TIMEOUT                                                           04/02/2019 20:06:17 PAGE 1   
 
 
 C51 COMPILER V9.59.0.0, COMPILATION OF MODULE TIMEOUT
@@ -34,12 +34,12 @@ line level    source
   24   1             TimeOutPara->RecordValue=TimeOut_BaseValue();
   25   1             TimeOutPara->timeoutcnt=timeoutvalue;
   26   1      }
-  27          /*
+  27          
   28          void TimeOut_restart(TIMEOUT_PARA *TimeOutPara)
   29          {      
-  30                 TimeOutPara->RecordValue = TimeOut_BaseValue();
-  31          }
-  32          */
+  30   1             TimeOutPara->RecordValue = TimeOut_BaseValue();
+  31   1      }
+  32          
   33          clock_time_t TimeOutDet_Check(TIMEOUT_PARA * TimeOutPara)
   34          {
   35   1             return (((clock_time_t)(InsBaseNum-TimeOutPara->RecordValue)>=TimeOutPara->timeoutcnt)?1:0);
@@ -48,7 +48,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    121    ----
+   CODE SIZE        =    127    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

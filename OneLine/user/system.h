@@ -10,7 +10,7 @@
 
 
 
-#define OnLine_Time      500
+#define OnLine_Time      400
 
 
 

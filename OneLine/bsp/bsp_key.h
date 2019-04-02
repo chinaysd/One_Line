@@ -3,11 +3,13 @@
 
 #include "sc92f732x_c.h"
 
+#include "TimeOut.h"
+
 
 #define KEY_PORT      P2
 #define KEY_PIN        P21
 
-
+#define KeyDebounceTime    100
 
 
 

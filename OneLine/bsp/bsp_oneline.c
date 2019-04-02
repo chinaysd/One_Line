@@ -1,9 +1,7 @@
 #include "bsp_oneline.h"
 
 PROTOCOL_SENDMODE Protocol_SendMode;
-
 PROTOCOL_REVMODE  Protocol_RevMode;
-
 
 /**********************************************************************************
 *зїеп:peter
@@ -141,7 +139,7 @@ void OneLineOut_Handle(void)
 		Protocol_SendMode.ProcessFlag = 1;
 		Protocol_SendMode.CommandTemp = Protocol_SendMode.Command;
 	}
-	Data_Handle();
+	Data_Handle();	
 }
 
 /**********************************************************************************

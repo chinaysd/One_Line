@@ -1,4 +1,4 @@
-C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/01/2019 20:55:27 PAGE 1   
+C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/02/2019 20:06:17 PAGE 1   
 
 
 C51 COMPILER V9.59.0.0, COMPILATION OF MODULE BSP_ONELINE
@@ -11,252 +11,250 @@ line level    source
    1          #include "bsp_oneline.h"
    2          
    3          PROTOCOL_SENDMODE Protocol_SendMode;
-   4          
-   5          PROTOCOL_REVMODE  Protocol_RevMode;
-   6          
-   7          
-   8          /**********************************************************************************
-   9          *作者:peter
-  10          *日期:190401
-  11          *描述:IO口输出初始化
-  12          *返回:无
-  13          ***********************************************************************************/
-  14          void OneLineOut_Init(void)
-  15          {
-  16   1             P0CON |= 0X01;
-  17   1             P0PH   &= ~0X01;
-  18   1      }
-  19          /**********************************************************************************
-  20          *作者:peter
-  21          *日期:190401
-  22          *描述:IO口输入初始化
-  23          *返回:无
-  24          ***********************************************************************************/
-  25          void OneLineIn_Init(void)
-  26          {
-  27   1             P0CON &= ~0X01;
-  28   1             P0PH   |=  0X01;
-  29   1      }
-  30          
-  31          /**********************************************************************************
-  32          *作者:peter
-  33          *日期:190401
-  34          *描述:数据1处理
-  35          *返回:无
-  36          ***********************************************************************************/
-  37          static void Data1_Handle(void)
-  38          {
-  39   1             Protocol_SendMode.u16Send1Cnts ++;
-  40   1             if(Protocol_SendMode.u16Send1Cnts < Data1Time9Cnts)
-  41   1             {
-  42   2                    WriteHight();
-  43   2             }
-  44   1             else
-  45   1             {
-  46   2                    if(Protocol_SendMode.u16Send1Cnts < Data1Time10Cnts)
-  47   2                    {
-  48   3                           WriteLow();
-  49   3                    }
-  50   2                    else
-  51   2                    {
-  52   3                           Protocol_SendMode.u16Send1Cnts = 0;
-  53   3                           Protocol_SendMode.CommandTemp <<= 1;
-  54   3                           Protocol_SendMode.index --;
-C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/01/2019 20:55:27 PAGE 2   
+   4          PROTOCOL_REVMODE  Protocol_RevMode;
+   5          
+   6          /**********************************************************************************
+   7          *作者:peter
+   8          *日期:190401
+   9          *描述:IO口输出初始化
+  10          *返回:无
+  11          ***********************************************************************************/
+  12          void OneLineOut_Init(void)
+  13          {
+  14   1             P0CON |= 0X01;
+  15   1             P0PH   &= ~0X01;
+  16   1      }
+  17          /**********************************************************************************
+  18          *作者:peter
+  19          *日期:190401
+  20          *描述:IO口输入初始化
+  21          *返回:无
+  22          ***********************************************************************************/
+  23          void OneLineIn_Init(void)
+  24          {
+  25   1             P0CON &= ~0X01;
+  26   1             P0PH   |=  0X01;
+  27   1      }
+  28          
+  29          /**********************************************************************************
+  30          *作者:peter
+  31          *日期:190401
+  32          *描述:数据1处理
+  33          *返回:无
+  34          ***********************************************************************************/
+  35          static void Data1_Handle(void)
+  36          {
+  37   1             Protocol_SendMode.u16Send1Cnts ++;
+  38   1             if(Protocol_SendMode.u16Send1Cnts < Data1Time9Cnts)
+  39   1             {
+  40   2                    WriteHight();
+  41   2             }
+  42   1             else
+  43   1             {
+  44   2                    if(Protocol_SendMode.u16Send1Cnts < Data1Time10Cnts)
+  45   2                    {
+  46   3                           WriteLow();
+  47   3                    }
+  48   2                    else
+  49   2                    {
+  50   3                           Protocol_SendMode.u16Send1Cnts = 0;
+  51   3                           Protocol_SendMode.CommandTemp <<= 1;
+  52   3                           Protocol_SendMode.index --;
+  53   3                    }
+  54   2             }
+C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/02/2019 20:06:17 PAGE 2   
 
-  55   3                    }
-  56   2             }
-  57   1      }
-  58          /**********************************************************************************
-  59          *作者:peter
-  60          *日期:190401
-  61          *描述:数据0处理
-  62          *返回:无
-  63          ***********************************************************************************/
-  64          static void Data0_Handle(void)
-  65          {
-  66   1             Protocol_SendMode.u16Send0Cnts ++;
-  67   1             if(Protocol_SendMode.u16Send0Cnts < Data0Time5Cnts)
-  68   1             {
-  69   2                    WriteHight();
-  70   2             }
-  71   1             else
-  72   1             {
-  73   2                    if(Protocol_SendMode.u16Send0Cnts < Data0Time10Cnts)
-  74   2                    {
-  75   3                           WriteLow();
-  76   3                    }
-  77   2                    else
-  78   2                    {
-  79   3                           Protocol_SendMode.u16Send0Cnts = 0;
-  80   3                           Protocol_SendMode.CommandTemp <<= 1;
-  81   3                           Protocol_SendMode.index --;
-  82   3                    }
-  83   2             }
-  84   1      }
-  85          /**********************************************************************************
-  86          *作者:peter
-  87          *日期:190401
-  88          *描述:数据处理
-  89          *返回:无
-  90          ***********************************************************************************/
-  91          static void Data_Handle(void)
-  92          {
-  93   1             if(Protocol_SendMode.ProcessFlag)
-  94   1             {
-  95   2                    Protocol_SendMode.u16SendHanderCnts ++;
-  96   2                    if(Protocol_SendMode.u16SendHanderCnts < HeadDataTime)
-  97   2                    {
-  98   3                           WriteLow();
-  99   3                    }
- 100   2                    else
- 101   2                   {
- 102   3                                  if(Protocol_SendMode.index > 0)
- 103   3                                  {
- 104   4                                         if(Protocol_SendMode.CommandTemp & 0x80)
- 105   4                                         {
- 106   5                                                Data1_Handle();
- 107   5                                         }
- 108   4                                         else
- 109   4                                         {
- 110   5                                                Data0_Handle();
- 111   5                                         }
- 112   4                                  }
- 113   3                                  else
- 114   3                                  {
- 115   4                                         Protocol_SendMode.u16SendEnderCnts ++;
- 116   4                                         WriteLow();
-C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/01/2019 20:55:27 PAGE 3   
+  55   1      }
+  56          /**********************************************************************************
+  57          *作者:peter
+  58          *日期:190401
+  59          *描述:数据0处理
+  60          *返回:无
+  61          ***********************************************************************************/
+  62          static void Data0_Handle(void)
+  63          {
+  64   1             Protocol_SendMode.u16Send0Cnts ++;
+  65   1             if(Protocol_SendMode.u16Send0Cnts < Data0Time5Cnts)
+  66   1             {
+  67   2                    WriteHight();
+  68   2             }
+  69   1             else
+  70   1             {
+  71   2                    if(Protocol_SendMode.u16Send0Cnts < Data0Time10Cnts)
+  72   2                    {
+  73   3                           WriteLow();
+  74   3                    }
+  75   2                    else
+  76   2                    {
+  77   3                           Protocol_SendMode.u16Send0Cnts = 0;
+  78   3                           Protocol_SendMode.CommandTemp <<= 1;
+  79   3                           Protocol_SendMode.index --;
+  80   3                    }
+  81   2             }
+  82   1      }
+  83          /**********************************************************************************
+  84          *作者:peter
+  85          *日期:190401
+  86          *描述:数据处理
+  87          *返回:无
+  88          ***********************************************************************************/
+  89          static void Data_Handle(void)
+  90          {
+  91   1             if(Protocol_SendMode.ProcessFlag)
+  92   1             {
+  93   2                    Protocol_SendMode.u16SendHanderCnts ++;
+  94   2                    if(Protocol_SendMode.u16SendHanderCnts < HeadDataTime)
+  95   2                    {
+  96   3                           WriteLow();
+  97   3                    }
+  98   2                    else
+  99   2                   {
+ 100   3                                  if(Protocol_SendMode.index > 0)
+ 101   3                                  {
+ 102   4                                         if(Protocol_SendMode.CommandTemp & 0x80)
+ 103   4                                         {
+ 104   5                                                Data1_Handle();
+ 105   5                                         }
+ 106   4                                         else
+ 107   4                                         {
+ 108   5                                                Data0_Handle();
+ 109   5                                         }
+ 110   4                                  }
+ 111   3                                  else
+ 112   3                                  {
+ 113   4                                         Protocol_SendMode.u16SendEnderCnts ++;
+ 114   4                                         WriteLow();
+ 115   4                                         if(Protocol_SendMode.u16SendEnderCnts == EndDataTime)
+ 116   4                                         {
+C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/02/2019 20:06:17 PAGE 3   
 
- 117   4                                         if(Protocol_SendMode.u16SendEnderCnts == EndDataTime)
- 118   4                                         {
- 119   5                                                WriteHight();
- 120   5                                                Protocol_SendMode.u16SendEnderCnts = 0;
- 121   5                                                Protocol_SendMode.u16SendHanderCnts = 0;
- 122   5                                                Protocol_SendMode.ProcessFlag = 0;
- 123   5                                                Protocol_SendMode.index = 8;
- 124   5                                         }
- 125   4                                  }
- 126   3                    }
- 127   2             }
- 128   1      }
- 129          /**********************************************************************************
- 130          *作者:peter
- 131          *日期:190401
- 132          *描述:一串数据发送处理
- 133          *返回:无
- 134          ***********************************************************************************/
- 135          void OneLineOut_Handle(void)
- 136          {
- 137   1             Protocol_SendMode.u16SenderCnts ++;
- 138   1             if(Protocol_SendMode.u16SenderCnts == SerialDataTime)
- 139   1             {
- 140   2                    Protocol_SendMode.u16SenderCnts = 0;
- 141   2                    Protocol_SendMode.ProcessFlag = 1;
- 142   2                    Protocol_SendMode.CommandTemp = Protocol_SendMode.Command;
- 143   2             }
- 144   1             Data_Handle();
- 145   1      }
- 146          
- 147          /**********************************************************************************
- 148          *作者:peter
- 149          *日期:190401
- 150          *描述:一串数据接收处理
- 151          *返回:无
- 152          ***********************************************************************************/
- 153          void OneLineIn_Handle(void)
- 154          {
- 155   1             Protocol_RevMode.Rev_Data = ONELINE_PIN;
- 156   1             if((!Protocol_RevMode.Rev_Data)&&(!Protocol_RevMode.StartRevDataFlag))
- 157   1             {
- 158   2                    ++ Protocol_RevMode.u8Cnts50ms;
- 159   2             }
- 160   1             if(Protocol_RevMode.Rev_Data)
- 161   1             {
- 162   2                    if((Protocol_RevMode.u8Cnts50ms >= 15)&&(Protocol_RevMode.u8Cnts50ms <= 22))
- 163   2                    {
- 164   3                           Protocol_RevMode.HightLevelTime = 0;
- 165   3                           Protocol_RevMode.LowLevelTime = 0;
- 166   3                           Protocol_RevMode.u8Cnts50ms= 0;
- 167   3                           Protocol_RevMode.Value = 0;
- 168   3                           Protocol_RevMode.StartRevDataFlag = 1;
- 169   3                           Protocol_RevMode.Total_Data = 8;
- 170   3                    }
- 171   2                    else if(Protocol_RevMode.u8Cnts50ms > 22)
- 172   2                    {
- 173   3                           Protocol_RevMode.HightLevelTime = 0;
- 174   3                           Protocol_RevMode.LowLevelTime = 0;
- 175   3                           Protocol_RevMode.u8Cnts50ms= 0;
- 176   3                           Protocol_RevMode.Value = 0;
- 177   3                           Protocol_RevMode.StartRevDataFlag = 0;
- 178   3                           Protocol_RevMode.Total_Data = 8;
-C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/01/2019 20:55:27 PAGE 4   
+ 117   5                                                WriteHight();
+ 118   5                                                Protocol_SendMode.u16SendEnderCnts = 0;
+ 119   5                                                Protocol_SendMode.u16SendHanderCnts = 0;
+ 120   5                                                Protocol_SendMode.ProcessFlag = 0;
+ 121   5                                                Protocol_SendMode.index = 8;
+ 122   5                                         }
+ 123   4                                  }
+ 124   3                    }
+ 125   2             }
+ 126   1      }
+ 127          /**********************************************************************************
+ 128          *作者:peter
+ 129          *日期:190401
+ 130          *描述:一串数据发送处理
+ 131          *返回:无
+ 132          ***********************************************************************************/
+ 133          void OneLineOut_Handle(void)
+ 134          {
+ 135   1             Protocol_SendMode.u16SenderCnts ++;
+ 136   1             if(Protocol_SendMode.u16SenderCnts == SerialDataTime)
+ 137   1             {
+ 138   2                    Protocol_SendMode.u16SenderCnts = 0;
+ 139   2                    Protocol_SendMode.ProcessFlag = 1;
+ 140   2                    Protocol_SendMode.CommandTemp = Protocol_SendMode.Command;
+ 141   2             }
+ 142   1             Data_Handle();       
+ 143   1      }
+ 144          
+ 145          /**********************************************************************************
+ 146          *作者:peter
+ 147          *日期:190401
+ 148          *描述:一串数据接收处理
+ 149          *返回:无
+ 150          ***********************************************************************************/
+ 151          void OneLineIn_Handle(void)
+ 152          {
+ 153   1             Protocol_RevMode.Rev_Data = ONELINE_PIN;
+ 154   1             if((!Protocol_RevMode.Rev_Data)&&(!Protocol_RevMode.StartRevDataFlag))
+ 155   1             {
+ 156   2                    ++ Protocol_RevMode.u8Cnts50ms;
+ 157   2             }
+ 158   1             if(Protocol_RevMode.Rev_Data)
+ 159   1             {
+ 160   2                    if((Protocol_RevMode.u8Cnts50ms >= 15)&&(Protocol_RevMode.u8Cnts50ms <= 22))
+ 161   2                    {
+ 162   3                           Protocol_RevMode.HightLevelTime = 0;
+ 163   3                           Protocol_RevMode.LowLevelTime = 0;
+ 164   3                           Protocol_RevMode.u8Cnts50ms= 0;
+ 165   3                           Protocol_RevMode.Value = 0;
+ 166   3                           Protocol_RevMode.StartRevDataFlag = 1;
+ 167   3                           Protocol_RevMode.Total_Data = 8;
+ 168   3                    }
+ 169   2                    else if(Protocol_RevMode.u8Cnts50ms > 22)
+ 170   2                    {
+ 171   3                           Protocol_RevMode.HightLevelTime = 0;
+ 172   3                           Protocol_RevMode.LowLevelTime = 0;
+ 173   3                           Protocol_RevMode.u8Cnts50ms= 0;
+ 174   3                           Protocol_RevMode.Value = 0;
+ 175   3                           Protocol_RevMode.StartRevDataFlag = 0;
+ 176   3                           Protocol_RevMode.Total_Data = 8;
+ 177   3                    }
+ 178   2                    else
+C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/02/2019 20:06:17 PAGE 4   
 
- 179   3                    }
- 180   2                    else
- 181   2                    {
- 182   3                           Protocol_RevMode.u8Cnts50ms = 0;
- 183   3                    }
- 184   2             }
- 185   1             if(Protocol_RevMode.StartRevDataFlag)
- 186   1             {
- 187   2                    if(Protocol_RevMode.Total_Data > 0)
- 188   2                    {
- 189   3                           if(Protocol_RevMode.Rev_Data)
- 190   3                           {
- 191   4                                  Protocol_RevMode.LowLevelFlag = 1;
- 192   4                                  Protocol_RevMode.HightLevelTime ++;
- 193   4                           }
- 194   3                           if((!Protocol_RevMode.Rev_Data)&&(Protocol_RevMode.LowLevelFlag))
- 195   3                           {
- 196   4                                  Protocol_RevMode.LowLevelFlag = 0;
- 197   4                                  Protocol_RevMode.Value <<= 1;
- 198   4                                  Protocol_RevMode.LowLevelTime ++;
- 199   4                                  if((Protocol_RevMode.HightLevelTime >= 7)&&(Protocol_RevMode.HightLevelTime <= 10))
- 200   4                                  {
- 201   5                                         Protocol_RevMode.HightLevelTime = 0;
- 202   5                                         Protocol_RevMode.LowLevelTime = 0;
- 203   5                                         Protocol_RevMode.Value |= 0x01;
- 204   5                                         Protocol_RevMode.Total_Data --;
- 205   5                                  }
- 206   4                                  if((Protocol_RevMode.HightLevelTime >= 1)&&(Protocol_RevMode.HightLevelTime <= 6))
- 207   4                                  {
- 208   5                                         Protocol_RevMode.HightLevelTime = 0;
- 209   5                                         Protocol_RevMode.LowLevelTime = 0;
- 210   5                                         Protocol_RevMode.Value &= ~0x01;
- 211   5                                         Protocol_RevMode.Total_Data --;
- 212   5                                  }
- 213   4                                  if((Protocol_RevMode.HightLevelTime > 16)&&(Protocol_RevMode.LowLevelTime>8))
- 214   4                                  {
- 215   5                                         Protocol_RevMode.HightLevelTime = 0;
- 216   5                                         Protocol_RevMode.LowLevelTime = 0;
- 217   5                                         Protocol_RevMode.u8Cnts50ms= 0;
- 218   5                                         Protocol_RevMode.Value = 0;
- 219   5                                         Protocol_RevMode.StartRevDataFlag = 0;
- 220   5                                         Protocol_RevMode.Total_Data = 8;
- 221   5                                  }
- 222   4                           }
- 223   3                    }
- 224   2                    else
- 225   2                    {
- 226   3                           Protocol_RevMode.HightLevelTime = 0;
- 227   3                           Protocol_RevMode.LowLevelTime = 0;
- 228   3                           Protocol_RevMode.u8Cnts50ms= 0;
- 229   3                           Protocol_RevMode.Data = Protocol_RevMode.Value;
- 230   3                           Protocol_RevMode.StartRevDataFlag = 0;
- 231   3                           Protocol_RevMode.Total_Data = 8;
- 232   3                    }
- 233   2             }
- 234   1             
- 235   1      }
+ 179   2                    {
+ 180   3                           Protocol_RevMode.u8Cnts50ms = 0;
+ 181   3                    }
+ 182   2             }
+ 183   1             if(Protocol_RevMode.StartRevDataFlag)
+ 184   1             {
+ 185   2                    if(Protocol_RevMode.Total_Data > 0)
+ 186   2                    {
+ 187   3                           if(Protocol_RevMode.Rev_Data)
+ 188   3                           {
+ 189   4                                  Protocol_RevMode.LowLevelFlag = 1;
+ 190   4                                  Protocol_RevMode.HightLevelTime ++;
+ 191   4                           }
+ 192   3                           if((!Protocol_RevMode.Rev_Data)&&(Protocol_RevMode.LowLevelFlag))
+ 193   3                           {
+ 194   4                                  Protocol_RevMode.LowLevelFlag = 0;
+ 195   4                                  Protocol_RevMode.Value <<= 1;
+ 196   4                                  Protocol_RevMode.LowLevelTime ++;
+ 197   4                                  if((Protocol_RevMode.HightLevelTime >= 7)&&(Protocol_RevMode.HightLevelTime <= 10))
+ 198   4                                  {
+ 199   5                                         Protocol_RevMode.HightLevelTime = 0;
+ 200   5                                         Protocol_RevMode.LowLevelTime = 0;
+ 201   5                                         Protocol_RevMode.Value |= 0x01;
+ 202   5                                         Protocol_RevMode.Total_Data --;
+ 203   5                                  }
+ 204   4                                  if((Protocol_RevMode.HightLevelTime >= 1)&&(Protocol_RevMode.HightLevelTime <= 6))
+ 205   4                                  {
+ 206   5                                         Protocol_RevMode.HightLevelTime = 0;
+ 207   5                                         Protocol_RevMode.LowLevelTime = 0;
+ 208   5                                         Protocol_RevMode.Value &= ~0x01;
+ 209   5                                         Protocol_RevMode.Total_Data --;
+ 210   5                                  }
+ 211   4                                  if((Protocol_RevMode.HightLevelTime > 16)&&(Protocol_RevMode.LowLevelTime>8))
+ 212   4                                  {
+ 213   5                                         Protocol_RevMode.HightLevelTime = 0;
+ 214   5                                         Protocol_RevMode.LowLevelTime = 0;
+ 215   5                                         Protocol_RevMode.u8Cnts50ms= 0;
+ 216   5                                         Protocol_RevMode.Value = 0;
+ 217   5                                         Protocol_RevMode.StartRevDataFlag = 0;
+ 218   5                                         Protocol_RevMode.Total_Data = 8;
+ 219   5                                  }
+ 220   4                           }
+ 221   3                    }
+ 222   2                    else
+ 223   2                    {
+ 224   3                           Protocol_RevMode.HightLevelTime = 0;
+ 225   3                           Protocol_RevMode.LowLevelTime = 0;
+ 226   3                           Protocol_RevMode.u8Cnts50ms= 0;
+ 227   3                           Protocol_RevMode.Data = Protocol_RevMode.Value;
+ 228   3                           Protocol_RevMode.StartRevDataFlag = 0;
+ 229   3                           Protocol_RevMode.Total_Data = 8;
+ 230   3                    }
+ 231   2             }
+ 232   1             
+ 233   1      }
+ 234          
+ 235          
  236          
  237          
  238          
  239          
- 240          
-C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/01/2019 20:55:27 PAGE 5   
 
- 241          
+C51 COMPILER V9.59.0.0   BSP_ONELINE                                                       04/02/2019 20:06:17 PAGE 5   
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE

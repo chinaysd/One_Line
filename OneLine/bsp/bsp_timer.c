@@ -42,7 +42,7 @@ void timer0() interrupt 1
     TL0 = (65536 - 1400)%256;
     TH0 = (65536 - 1400)/256;
     TimeOutDet_DecHandle();
-    OneLineOut_Handle();
+    OneLineOut_Handle();	
     OneLineIn_Handle();
 }
 
